@@ -78,7 +78,7 @@ onMounted(fetchPokemonData);
 h1 {
   text-align: center;
   color: #fff;
-  margin-bottom: 20px;
+  margin: 30px;
 }
 
 .loading {
