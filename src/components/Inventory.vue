@@ -4,6 +4,7 @@ import { useInventoryStore } from "@/stores/inventory";
 import pokeBallImg from "@/assets/PokéBall.png";
 import superBallImg from "@/assets/SuperBall.png";
 import hyperBallImg from "@/assets/HyperBall.png";
+import honorBallImg from "@/assets/HonorBall.png";
 
 const inventoryStore = useInventoryStore();
 </script>
@@ -24,6 +25,10 @@ const inventoryStore = useInventoryStore();
       <li>
         <img :src="hyperBallImg" alt="Hyper Ball" width="50" height="50" />
         x{{ inventoryStore.inventory.hyperBall }}
+      </li>
+      <li>
+        <img :src="honorBallImg" alt="Honor Ball" width="50" height="50" />
+        x{{ inventoryStore.inventory.honorBall }}
       </li>
     </ul>
   </main>

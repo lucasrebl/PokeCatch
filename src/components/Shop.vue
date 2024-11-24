@@ -18,6 +18,23 @@ const buyItem = (cost: number, item: keyof typeof inventoryStore.inventory) => {
     alert("Vous n'avez pas assez de points pour cet achat !");
   }
 };
+
+const buyItemBulk = (quantity: number, cost: number, item: keyof typeof inventoryStore.inventory) => {
+  const totalCost = quantity * cost;
+  if (inventoryStore.points >= totalCost) {
+    for (let i = 0; i < quantity; i++) {
+      inventoryStore.buyItem(cost, item);
+    }
+    if (inventoryStore.inventory[item] >= 10) {
+      inventoryStore.buyItem(0, 'honorBall');  // Ajout de l'Honor Ball
+      alert(`Achat réussi ! Il vous reste ${inventoryStore.points} points. Vous avez reçu une Honor Ball en cadeau !`);
+    } else {
+      alert(`Achat réussi ! Il vous reste ${inventoryStore.points} points.`);
+    }
+  } else {
+    alert("Vous n'avez pas assez de points pour cet achat !");
+  }
+};
 </script>
 
 <template>
@@ -38,6 +55,25 @@ const buyItem = (cost: number, item: keyof typeof inventoryStore.inventory) => {
         <p>Hyper Ball ({{ hyperBallCost }} points)</p>
       </button>
     </div>
+
+    <div class="items-container2">
+      <button :disabled="inventoryStore.points < pokeBallCost * 10" @click="buyItemBulk(10, pokeBallCost, 'pokeBall')">
+        <img :src="pokeBallImg" alt="Poké Ball" />
+        <p>Acheter 10 Poké Balls ({{ pokeBallCost * 10 }} points)</p>
+      </button>
+
+      <button :disabled="inventoryStore.points < superBallCost * 10"
+        @click="buyItemBulk(10, superBallCost, 'superBall')">
+        <img :src="superBallImg" alt="Super Ball" />
+        <p>Acheter 10 Super Balls ({{ superBallCost * 10 }} points)</p>
+      </button>
+
+      <button :disabled="inventoryStore.points < hyperBallCost * 10"
+        @click="buyItemBulk(10, hyperBallCost, 'hyperBall')">
+        <img :src="hyperBallImg" alt="Hyper Ball" />
+        <p>Acheter 10 Hyper Balls ({{ hyperBallCost * 10 }} points)</p>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -47,6 +83,13 @@ const buyItem = (cost: number, item: keyof typeof inventoryStore.inventory) => {
   justify-content: center;
   margin-top: -25%;
   gap: 20px;
+}
+
+.items-container2 {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 50px;
 }
 
 button {

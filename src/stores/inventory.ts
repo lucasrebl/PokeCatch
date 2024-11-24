@@ -8,6 +8,7 @@ export const useInventoryStore = defineStore("inventory", () => {
     pokeBall: 10,
     superBall: 0,
     hyperBall: 0,
+    honorBall: 0,
   });
 
   const buyItem = (cost: number, item: keyof typeof inventory.value) => {
