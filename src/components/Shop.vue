@@ -92,6 +92,45 @@ const buyItemBulk = (quantity: number, cost: number, item: keyof typeof inventor
   margin-top: 50px;
 }
 
+@media (max-width: 850px) {
+  .items-container, .items-container2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -60%;
+  }
+
+  .items-container2 {
+    margin-top: 20px;
+  }
+
+  button {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 500px) {
+  .items-container, .items-container2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -90%;
+    margin-left: 10em;
+  }
+
+  .items-container2 {
+    margin-top: 20px;
+  }
+
+  button {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 10px; 
+  }
+}
+
 button {
   display: flex;
   flex-direction: column;
@@ -125,4 +164,5 @@ button:disabled img {
 button:disabled p {
   color: #333;
 }
+
 </style>
