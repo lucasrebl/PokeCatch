@@ -2,6 +2,11 @@
 import { ref } from 'vue';
 import { useInventoryStore } from '@/stores/inventory'; // Assurez-vous du bon chemin du store
 
+import pokeBallImg from "@/assets/PokéBall.png";
+import superBallImg from "@/assets/SuperBall.png";
+import hyperBallImg from "@/assets/HyperBall.png";
+import HonorBallImg from "@/assets/HonorBall.png";
+
 // Initialisation du store
 const inventoryStore = useInventoryStore();
 
@@ -18,21 +23,31 @@ const generationList = ref([
     { label: '9G', value: 9 },
 ]);
 
-const habitatList = ref([
-    { label: 'Cave', value: 'cave' },
-    { label: 'Forest', value: 'forest' },
-    { label: 'Grassland', value: 'grassland' },
-    { label: 'Mountain', value: 'mountain' },
-    { label: 'Rare', value: 'rare' },
-    { label: 'Rough Terrain', value: 'rough-terrain' },
-    { label: 'Sea', value: 'sea' },
-    { label: 'Urban', value: 'urban' },
-    { label: "Water's Edge", value: 'waters-edge' },
+const typeList = ref([
+    { label: 'Normal', value: 'normal' },
+    { label: 'Fire', value: 'fire' },
+    { label: 'Water', value: 'water' },
+    { label: 'Grass', value: 'grass' },
+    { label: 'Electric', value: 'electric' },
+    { label: 'Ice', value: 'ice' },
+    { label: 'Fighting', value: 'fighting' },
+    { label: 'Poison', value: 'poison' },
+    { label: 'Ground', value: 'ground' },
+    { label: 'Flying', value: 'flying' },
+    { label: 'Psychic', value: 'psychic' },
+    { label: 'Bug', value: 'bug' },
+    { label: 'Rock', value: 'rock' },
+    { label: 'Ghost', value: 'ghost' },
+    { label: 'Dark', value: 'dark' },
+    { label: 'Dragon', value: 'dragon' },
+    { label: 'Steel', value: 'steel' },
+    { label: 'Fairy', value: 'fairy' },
 ]);
+
 
 // Sélections de l'utilisateur
 const selectedGeneration = ref(1);
-const selectedHabitat = ref('cave');
+const selectedType = ref('normal');
 
 // Pokémon aléatoire affiché
 const randomPokemon = ref<{ name: string, id: number, image: string, captureRate: number, captureMessage?: string } | string | null>(null);
@@ -58,42 +73,37 @@ const fetchRandomPokemon = async () => {
             return;
         }
 
+        // Obtenir les Pokémon du type sélectionné
+        const typeResponse = await fetch(`https://pokeapi.co/api/v2/type/${selectedType.value}`);
+        const typeData = await typeResponse.json();
+        const pokemonsOfType = typeData.pokemon.map((p: any) => {
+            const id = parseInt(p.pokemon.url.split('/').slice(-2)[0], 10);
+            return { name: p.pokemon.name, id };
+        });
+
+        // Filtrer les Pokémon par génération
         const [start, end] = generationRange[selectedGeneration.value];
-        const allPokemons: any[] = [];
+        const filteredPokemons = pokemonsOfType.filter((p: { id: number }) => p.id >= start && p.id <= end);
 
-        // Récupérer tous les Pokémon de la génération sélectionnée
-        for (let id = start; id <= end; id++) {
-            const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-            const data = await response.json();
-
-            // Récupérer les informations de l'habitat
-            const speciesResponse = await fetch(data.species.url);
-            const speciesData = await speciesResponse.json();
-
-            // Si l'habitat correspond, ajouter à la liste des Pokémon filtrés
-            const normalizedHabitat = speciesData.habitat?.name.toLowerCase().replace("'", '') || '';
-            const normalizedSelectedHabitat = selectedHabitat.value.toLowerCase().replace("'", '');
-
-            if (normalizedHabitat === normalizedSelectedHabitat) {
-                allPokemons.push({
-                    name: data.name,
-                    id: data.id,
-                    image: data.sprites.front_default,
-                    captureRate: speciesData.capture_rate, // Taux de capture du Pokémon
-                });
-            }
-        }
-
-        // Si aucun Pokémon ne correspond, afficher un message
-        if (allPokemons.length === 0) {
-            randomPokemon.value = `Aucun Pokémon trouvé pour cet habitat dans cette génération.`;
+        if (filteredPokemons.length === 0) {
+            randomPokemon.value = `Aucun Pokémon trouvé pour ce type dans cette génération.`;
             return;
         }
 
-        // Choisir un Pokémon aléatoire parmi ceux filtrés
-        const randomIndex = Math.floor(Math.random() * allPokemons.length);
-        randomPokemon.value = allPokemons[randomIndex];
+        // Choisir un Pokémon aléatoire
+        const randomIndex = Math.floor(Math.random() * filteredPokemons.length);
+        const randomPokemonData = filteredPokemons[randomIndex];
 
+        // Récupérer les informations détaillées du Pokémon
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomPokemonData.id}`);
+        const data = await response.json();
+
+        randomPokemon.value = {
+            name: data.name,
+            id: data.id,
+            image: data.sprites.front_default,
+            captureRate: data.species.capture_rate, // Taux de capture
+        };
     } catch (error) {
         randomPokemon.value = 'Erreur lors de la récupération des données.';
         console.error('Erreur attrapée :', error);
@@ -114,7 +124,7 @@ const capturePokemon = (ballType: string) => {
 
 <template>
     <main>
-        <h1>Filtrer les Pokémon</h1>
+        <h1>Capturer des Pokémon</h1>
 
         <div class="form-group">
             <label for="generation">Choisissez une génération :</label>
@@ -126,15 +136,15 @@ const capturePokemon = (ballType: string) => {
         </div>
 
         <div class="form-group">
-            <label for="habitat">Choisissez un habitat :</label>
-            <select id="habitat" v-model="selectedHabitat">
-                <option v-for="habitat in habitatList" :key="habitat.value" :value="habitat.value">
-                    {{ habitat.label }}
+            <label for="type">Choisissez un type :</label>
+            <select id="type" v-model="selectedType">
+                <option v-for="type in typeList" :key="type.value" :value="type.value">
+                    {{ type.label }}
                 </option>
             </select>
         </div>
 
-        <button @click="fetchRandomPokemon">Afficher un Pokémon aléatoire</button>
+        <button class="button" @click="fetchRandomPokemon">Rencontrer un Pokémon aléatoire</button>
 
         <div v-if="randomPokemon" class="result">
             <p v-if="typeof randomPokemon === 'object'">
@@ -150,10 +160,22 @@ const capturePokemon = (ballType: string) => {
 
             <!-- Boutons pour capturer le Pokémon -->
             <div v-if="typeof randomPokemon === 'object'">
-                <button @click="capturePokemon('pokeBall')">Utiliser PokéBall</button>
-                <button @click="capturePokemon('superBall')">Utiliser SuperBall</button>
-                <button @click="capturePokemon('hyperBall')">Utiliser HyperBall</button>
-                <button @click="capturePokemon('honorBall')">Utiliser HonorBall</button>
+                <button :disabled="inventoryStore.inventory.pokeBall <= 0" @click="capturePokemon('pokeBall')"
+                    class="ball-button">
+                    <img :src="pokeBallImg" alt="Poké Ball" />
+                </button>
+                <button :disabled="inventoryStore.inventory.superBall <= 0" @click="capturePokemon('superBall')"
+                    class="ball-button">
+                    <img :src="superBallImg" alt="superBall" />
+                </button>
+                <button :disabled="inventoryStore.inventory.hyperBall <= 0" @click="capturePokemon('hyperBall')"
+                    class="ball-button">
+                    <img :src="hyperBallImg" alt="hyperBall" />
+                </button>
+                <button :disabled="inventoryStore.inventory.honorBall <= 0" @click="capturePokemon('honorBall')"
+                    class="ball-button">
+                    <img :src="HonorBallImg" alt="honorBall" />
+                </button>
             </div>
         </div>
     </main>
@@ -186,7 +208,7 @@ select {
     margin-left: 10px;
 }
 
-button {
+.button {
     display: block;
     margin: 20px auto;
     padding: 10px 20px;
@@ -198,7 +220,32 @@ button {
     cursor: pointer;
 }
 
-button:hover {
+.ball-button {
+    margin: 20px auto;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background: none;
+    transition: transform 0.3s ease;
+}
+
+.ball-button img {
+    max-width: 200px;
+    height: 70px;
+}
+
+.ball-button:hover {
+    transform: scale(1.5);
+}
+
+.ball-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.button:hover {
     background-color: #45a049;
 }
 
