@@ -6,7 +6,7 @@
         <RouterLink to="/pokemon-info"><button class="burgerBtn">pokemon info</button></RouterLink>
         <RouterLink to="/"><button class="burgerBtn">Pokédex</button></RouterLink>
         <RouterLink to="/shop"><button class="burgerBtn">Shop</button></RouterLink>
-        <RouterLink to="/"><button class="burgerBtn">Catch land</button></RouterLink>
+        <RouterLink to="/catch-land"><button class="burgerBtn">Catch land</button></RouterLink>
     </Slide>
     <header :class="{ hidden: isHidden }" @scroll="handleScroll">
         <div class="header-content">
@@ -17,7 +17,7 @@
                 <RouterLink to="/pokemon-info"><button>Pokémon info</button></RouterLink>
                 <RouterLink to="/"><button>Pokédex</button></RouterLink>
                 <RouterLink to="/shop"><button>Shop</button></RouterLink>
-                <RouterLink to="/"><button>Catch land</button></RouterLink>
+                <RouterLink to="/catch-land"><button>Catch land</button></RouterLink>
             </div>
         </div>
     </header>
