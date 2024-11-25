@@ -52,6 +52,8 @@ export const useInventoryStore = defineStore("inventory", () => {
     inventory.value[ballType]--; // Décrémenter l'inventaire de la ball utilisée
     const captureChance = (pokemon.captureRate * multiplier) / 255 * 100;
 
+    console.log(`Capture Chance for ${pokemon.name}: ${captureChance}%`);
+
     const success = Math.random() * 100 < captureChance;
     if (success) {
       // Ajouter le Pokémon au localStorage si capturé

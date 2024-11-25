@@ -139,7 +139,6 @@ const capturePokemon = (ballType: string) => {
         <div v-if="randomPokemon" class="result">
             <p v-if="typeof randomPokemon === 'object'">
                 <strong>{{ randomPokemon.name }}</strong> (ID: {{ randomPokemon.id }})<br />
-                Capture Rate: {{ randomPokemon.captureRate }}%
             </p>
             <img v-if="typeof randomPokemon === 'object'" :src="randomPokemon.image" :alt="randomPokemon.name" />
             <p v-if="typeof randomPokemon === 'string'">{{ randomPokemon }}</p>
