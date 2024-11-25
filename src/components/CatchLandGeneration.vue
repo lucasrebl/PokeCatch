@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useInventoryStore } from '@/stores/inventory'; // Assurez-vous du bon chemin du store
 
-// Listes des générations et habitats (inchangées)
+// Initialisation du store
+const inventoryStore = useInventoryStore();
+
+// Listes des générations et habitats
 const generationList = ref([
     { label: '1G', value: 1 },
     { label: '2G', value: 2 },
@@ -31,7 +35,7 @@ const selectedGeneration = ref(1);
 const selectedHabitat = ref('cave');
 
 // Pokémon aléatoire affiché
-const randomPokemon = ref<{ name: string, id: number, image: string } | string | null>(null);
+const randomPokemon = ref<{ name: string, id: number, image: string, captureRate: number, captureMessage?: string } | string | null>(null);
 
 // Fonction pour afficher un Pokémon aléatoire
 const fetchRandomPokemon = async () => {
@@ -75,6 +79,7 @@ const fetchRandomPokemon = async () => {
                     name: data.name,
                     id: data.id,
                     image: data.sprites.front_default,
+                    captureRate: speciesData.capture_rate, // Taux de capture du Pokémon
                 });
             }
         }
@@ -93,6 +98,17 @@ const fetchRandomPokemon = async () => {
         randomPokemon.value = 'Erreur lors de la récupération des données.';
         console.error('Erreur attrapée :', error);
     }
+};
+
+// Fonction de capture de Pokémon
+const capturePokemon = (ballType: string) => {
+    if (!randomPokemon.value || typeof randomPokemon.value === 'string') return;
+
+    // Appel à la méthode capturePokemon du store
+    const result = inventoryStore.capturePokemon(randomPokemon.value, ballType);
+
+    // Mettre à jour le message de capture
+    randomPokemon.value.captureMessage = result.message;
 };
 </script>
 
@@ -122,10 +138,24 @@ const fetchRandomPokemon = async () => {
 
         <div v-if="randomPokemon" class="result">
             <p v-if="typeof randomPokemon === 'object'">
-                <strong>{{ randomPokemon.name }}</strong> (ID: {{ randomPokemon.id }})
+                <strong>{{ randomPokemon.name }}</strong> (ID: {{ randomPokemon.id }})<br />
+                Capture Rate: {{ randomPokemon.captureRate }}%
             </p>
             <img v-if="typeof randomPokemon === 'object'" :src="randomPokemon.image" :alt="randomPokemon.name" />
             <p v-if="typeof randomPokemon === 'string'">{{ randomPokemon }}</p>
+
+            <!-- Affichage du message de capture -->
+            <p v-if="randomPokemon && typeof randomPokemon !== 'string' && randomPokemon.captureMessage">
+                {{ randomPokemon.captureMessage }}
+            </p>
+
+            <!-- Boutons pour capturer le Pokémon -->
+            <div v-if="typeof randomPokemon === 'object'">
+                <button @click="capturePokemon('pokeBall')">Utiliser PokéBall</button>
+                <button @click="capturePokemon('superBall')">Utiliser SuperBall</button>
+                <button @click="capturePokemon('hyperBall')">Utiliser HyperBall</button>
+                <button @click="capturePokemon('honorBall')">Utiliser HonorBall</button>
+            </div>
         </div>
     </main>
 </template>

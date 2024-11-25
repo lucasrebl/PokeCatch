@@ -36,5 +36,34 @@ export const useInventoryStore = defineStore("inventory", () => {
     return false;
   };
 
-  return { points, inventory, buyItem };
+  const capturePokemon = (pokemon: { name: string, id: number, captureRate: number }, ballType: string) => {
+    const ballMultipliers: Record<string, number> = {
+      pokeBall: 1.5,
+      superBall: 2.0,
+      hyperBall: 2.5,
+      honorBall: 1.5,
+    };
+
+    const multiplier = ballMultipliers[ballType];
+    if (!multiplier || inventory.value[ballType] <= 0) {
+      return { success: false, message: "Vous n'avez pas assez de cette ball." };
+    }
+
+    inventory.value[ballType]--; // Décrémenter l'inventaire de la ball utilisée
+    const captureChance = (pokemon.captureRate * multiplier) / 255 * 100;
+
+    const success = Math.random() * 100 < captureChance;
+    if (success) {
+      // Ajouter le Pokémon au localStorage si capturé
+      let capturedPokemons = JSON.parse(localStorage.getItem("capturedPokemons") || "[]");
+      capturedPokemons.push({ name: pokemon.name, id: pokemon.id });
+      localStorage.setItem("capturedPokemons", JSON.stringify(capturedPokemons));
+
+      return { success: true, message: "Le Pokémon a été capturé !" };
+    } else {
+      return { success: false, message: "La capture a échoué. Essayez encore." };
+    }
+  };
+
+  return { points, inventory, buyItem, capturePokemon };
 });
