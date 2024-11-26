@@ -183,7 +183,7 @@ const capturePokemon = (ballType: string) => {
 <style scoped>
 h1 {
     text-align: center;
-    margin-top: -30%;
+    margin-top: -25%;
 }
 
 .form-group {

@@ -36,7 +36,7 @@ const inventoryStore = useInventoryStore();
 
 <style scoped>
 h1 {
-    margin-top: 6em;
+    margin-top: 4em;
 }
 
 ul {

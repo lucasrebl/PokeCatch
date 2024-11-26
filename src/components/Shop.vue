@@ -81,7 +81,7 @@ const buyItemBulk = (quantity: number, cost: number, item: keyof typeof inventor
 .items-container {
   display: flex;
   justify-content: center;
-  margin-top: -25%;
+  margin-top: -22%;
   gap: 20px;
 }
 
