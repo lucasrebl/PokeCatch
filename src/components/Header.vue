@@ -61,6 +61,7 @@ export default defineComponent({
         return {
             isHidden,
             isMobile,
+            handleScroll, // Add handleScroll here
         }
     },
 })
