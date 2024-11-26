@@ -54,7 +54,10 @@ export const useInventoryStore = defineStore("inventory", () => {
     return false;
   };
 
-  const capturePokemon = (pokemon: { name: string; id: number; captureRate: number }, ballType: string) => {
+  const capturePokemon = (
+    pokemon: { name: string; id: number; captureRate: number; image: string },
+    ballType: string
+  ) => {
     const ballMultipliers: Record<string, number> = {
       pokeBall: 1.5,
       superBall: 2.0,
@@ -78,6 +81,7 @@ export const useInventoryStore = defineStore("inventory", () => {
       capturedPokemons.push({
         name: pokemon.name,
         id: pokemon.id,
+        image: pokemon.image, // Enregistrement de l'image
       });
       localStorage.setItem("capturedPokemons", JSON.stringify(capturedPokemons));
 
