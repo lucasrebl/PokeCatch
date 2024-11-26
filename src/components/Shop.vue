@@ -82,13 +82,13 @@ const buyItemBulk = (quantity: number, cost: number, item: keyof typeof inventor
   display: flex;
   justify-content: center;
   margin-top: -22%;
-  gap: 20px;
+  gap: 30px;
 }
 
 .items-container2 {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 30px;
   margin-top: 50px;
 }
 
@@ -138,10 +138,16 @@ button {
   border: none;
   background: none;
   cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+button:hover {
+  transform: scale(1.5);
 }
 
 button:disabled {
   cursor: not-allowed;
+  pointer-events: none;
 }
 
 img {
