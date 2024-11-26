@@ -4,7 +4,7 @@
             <img src="@/assets/PokeCatchLogo.png" alt="Logo" class="logoBurger" />
         </RouterLink>
         <RouterLink to="/pokemon-info"><button class="burgerBtn">pokemon info</button></RouterLink>
-        <RouterLink to="/"><button class="burgerBtn">Pokédex</button></RouterLink>
+        <RouterLink to="/pokedex"><button class="burgerBtn">Mon pokédex</button></RouterLink>
         <RouterLink to="/shop"><button class="burgerBtn">Shop</button></RouterLink>
         <RouterLink to="/catch-land"><button class="burgerBtn">Catch land</button></RouterLink>
     </Slide>
@@ -15,7 +15,7 @@
             </RouterLink>
             <div v-if="!isMobile" class="buttons">
                 <RouterLink to="/pokemon-info"><button>Pokémon info</button></RouterLink>
-                <RouterLink to="/"><button>Pokédex</button></RouterLink>
+                <RouterLink to="/pokedex"><button>Mon pokédex</button></RouterLink>
                 <RouterLink to="/shop"><button>Shop</button></RouterLink>
                 <RouterLink to="/catch-land"><button>Catch land</button></RouterLink>
             </div>

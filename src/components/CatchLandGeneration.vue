@@ -5,12 +5,12 @@ import { useInventoryStore } from '@/stores/inventory'; // Assurez-vous du bon c
 import pokeBallImg from "@/assets/PokéBall.png";
 import superBallImg from "@/assets/SuperBall.png";
 import hyperBallImg from "@/assets/HyperBall.png";
-import HonorBallImg from "@/assets/HonorBall.png";
+import honorBallImg from "@/assets/HonorBall.png";
 
 // Initialisation du store
 const inventoryStore = useInventoryStore();
 
-// Listes des générations et habitats
+// Listes des générations et types
 const generationList = ref([
     { label: '1G', value: 1 },
     { label: '2G', value: 2 },
@@ -44,13 +44,14 @@ const typeList = ref([
     { label: 'Fairy', value: 'fairy' },
 ]);
 
-
 // Sélections de l'utilisateur
 const selectedGeneration = ref(1);
 const selectedType = ref('normal');
 
 // Pokémon aléatoire affiché
-const randomPokemon = ref<{ name: string, id: number, image: string, captureRate: number, captureMessage?: string } | string | null>(null);
+const randomPokemon = ref<
+    { name: string; id: number; image: string; captureRate: number; captureMessage?: string } | string | null
+>(null);
 
 // Fonction pour afficher un Pokémon aléatoire
 const fetchRandomPokemon = async () => {
@@ -98,11 +99,15 @@ const fetchRandomPokemon = async () => {
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomPokemonData.id}`);
         const data = await response.json();
 
+        // Récupérer le taux de capture depuis l'endpoint species
+        const speciesResponse = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${randomPokemonData.id}`);
+        const speciesData = await speciesResponse.json();
+
         randomPokemon.value = {
             name: data.name,
             id: data.id,
             image: data.sprites.front_default,
-            captureRate: data.species.capture_rate, // Taux de capture
+            captureRate: speciesData.capture_rate, // Taux de capture
         };
     } catch (error) {
         randomPokemon.value = 'Erreur lors de la récupération des données.';
@@ -153,28 +158,22 @@ const capturePokemon = (ballType: string) => {
             <img v-if="typeof randomPokemon === 'object'" :src="randomPokemon.image" :alt="randomPokemon.name" />
             <p v-if="typeof randomPokemon === 'string'">{{ randomPokemon }}</p>
 
-            <!-- Affichage du message de capture -->
             <p v-if="randomPokemon && typeof randomPokemon !== 'string' && randomPokemon.captureMessage">
                 {{ randomPokemon.captureMessage }}
             </p>
 
-            <!-- Boutons pour capturer le Pokémon -->
             <div v-if="typeof randomPokemon === 'object'">
-                <button :disabled="inventoryStore.inventory.pokeBall <= 0" @click="capturePokemon('pokeBall')"
-                    class="ball-button">
+                <button :disabled="inventoryStore.inventory.pokeBall <= 0" @click="capturePokemon('pokeBall')" class="ball-button">
                     <img :src="pokeBallImg" alt="Poké Ball" />
                 </button>
-                <button :disabled="inventoryStore.inventory.superBall <= 0" @click="capturePokemon('superBall')"
-                    class="ball-button">
-                    <img :src="superBallImg" alt="superBall" />
+                <button :disabled="inventoryStore.inventory.superBall <= 0" @click="capturePokemon('superBall')" class="ball-button">
+                    <img :src="superBallImg" alt="Super Ball" />
                 </button>
-                <button :disabled="inventoryStore.inventory.hyperBall <= 0" @click="capturePokemon('hyperBall')"
-                    class="ball-button">
-                    <img :src="hyperBallImg" alt="hyperBall" />
+                <button :disabled="inventoryStore.inventory.hyperBall <= 0" @click="capturePokemon('hyperBall')" class="ball-button">
+                    <img :src="hyperBallImg" alt="Hyper Ball" />
                 </button>
-                <button :disabled="inventoryStore.inventory.honorBall <= 0" @click="capturePokemon('honorBall')"
-                    class="ball-button">
-                    <img :src="HonorBallImg" alt="honorBall" />
+                <button :disabled="inventoryStore.inventory.honorBall <= 0" @click="capturePokemon('honorBall')" class="ball-button">
+                    <img :src="honorBallImg" alt="Honor Ball" />
                 </button>
             </div>
         </div>
